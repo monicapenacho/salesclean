@@ -1,0 +1,60 @@
+# =============================================================================
+# SalesClean - entorno local completo
+#   - azurite:        emulador oficial de Microsoft de Azure Blob Storage
+#   - prefect-server: UI + API de Prefect en http://localhost:4200
+#   - pipeline:       imagen del proyecto (la que va a producción)
+#
+# Uso:
+#   docker compose up -d azurite prefect-server   # arranca infra local
+#   docker compose run --rm pipeline              # ejecuta el ETL
+#   docker compose down                           # para todo
+# =============================================================================
+
+services:
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    container_name: salesclean-azurite
+    command: "azurite-blob --blobHost 0.0.0.0 --blobPort 10000 --location /data --debug /data/debug.log"
+    ports:
+      - "10000:10000"
+    volumes:
+      - azurite-data:/data
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "10000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  prefect-server:
+    image: prefecthq/prefect:2.20-python3.11
+    container_name: salesclean-prefect
+    command: "prefect server start --host 0.0.0.0"
+    environment:
+      PREFECT_UI_URL: http://localhost:4200
+      PREFECT_API_URL: http://localhost:4200/api
+      PREFECT_SERVER_API_HOST: 0.0.0.0
+    ports:
+      - "4200:4200"
+    volumes:
+      - prefect-data:/root/.prefect
+
+  pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: salesclean-pipeline
+    image: salesclean:local
+    env_file: .env
+    environment:
+      PREFECT_API_URL: http://prefect-server:4200/api
+    depends_on:
+      azurite:
+        condition: service_healthy
+      prefect-server:
+        condition: service_started
+    volumes:
+      - ./data:/app/data:ro
+
+volumes:
+  azurite-data:
+  prefect-data:

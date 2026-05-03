@@ -1,0 +1,48 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Tests
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Docs y notebooks
+docs/
+notebooks/
+*.md
+!README.md
+
+# IDEs y OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Python local
+.venv/
+venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.ruff_cache/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# IaC (no va dentro de la imagen)
+infra/
+.terraform/
+
+# CI
+.github/
+
+# Datos reales (no van en imagen)
+data/raw/
+data/curated/
+data/output/

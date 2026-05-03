@@ -1,0 +1,140 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "salesclean"
+version = "0.1.0"
+description = "Pipeline DataOps para limpieza automática de datos de ventas con Prefect, Azure Blob y GitHub Actions."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "Mónica Penacho Collado", email = "monicapenachocollado@gmail.com" }
+]
+keywords = ["dataops", "etl", "pipeline", "azure", "prefect", "pandas"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "pandas>=2.2,<3.0",
+    "openpyxl>=3.1,<4.0",
+    "pyarrow>=15.0,<20.0",
+    "pandera>=0.18,<1.0",
+    "azure-storage-blob>=12.19,<13.0",
+    "azure-identity>=1.15,<2.0",
+    "prefect>=2.16,<3.0",
+    "pydantic>=2.5,<3.0",
+    "pydantic-settings>=2.1,<3.0",
+    "python-dotenv>=1.0,<2.0",
+    "structlog>=24.1,<25.0",
+    "requests>=2.31,<3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0,<9.0",
+    "pytest-cov>=4.1,<5.0",
+    "pytest-mock>=3.12,<4.0",
+    "ruff>=0.3,<1.0",
+    "black>=24.0,<25.0",
+    "mypy>=1.8,<2.0",
+    "types-requests",
+    "azure-storage-blob",
+]
+
+[project.scripts]
+salesclean = "salesclean.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/monicapenacho/salesclean"
+Repository = "https://github.com/monicapenacho/salesclean"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+salesclean = ["py.typed"]
+
+# --- Ruff (linter + formateador rápido) ---
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "flows", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade
+    "SIM",  # flake8-simplify
+    "N",    # pep8-naming
+]
+ignore = ["E501"]  # line length lo controla el formatter
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["B011"]
+
+# --- Black (formateador) ---
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+# --- pytest ---
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=salesclean",
+    "--cov-branch",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+    "--cov-report=html",
+    "--cov-fail-under=70",
+]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "unit: tests unitarios rápidos",
+    "integration: tests de integración (más lentos)",
+]
+
+# --- coverage ---
+[tool.coverage.run]
+source = ["src/salesclean"]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/__init__.py",
+    "*/cli.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
+show_missing = true
+skip_covered = false
+
+# --- mypy ---
+[tool.mypy]
+python_version = "3.11"
+strict = false
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+ignore_missing_imports = true
