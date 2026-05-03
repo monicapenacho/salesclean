@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SalesClean
 
 > Pipeline DataOps para limpieza automatizada de datos de ventas, orquestado con Prefect, contenerizado con Docker y desplegado en Microsoft Azure mediante GitHub Actions.
@@ -233,3 +234,7 @@ Tablero Kanban en GitHub Projects (link en el repo).
 Mónica Penacho Collado — *Universidad Internacional de Valencia (VIU)* — *20GIAR Metodologías de desarrollo y despliegue de aplicaciones para ciencia de datos* — Curso 2025/2026.
 
 Licencia [MIT](LICENSE).
+=======
+# salesclean
+salesclean
+>>>>>>> bcd7e982fbace6a12445cc37d37d8869fa31baa2
